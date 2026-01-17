@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Twitter Pixel Live Test</title>
+
+<!-- ✅ Twitter (X) Pixel Base Code -->
+<script>
+!function(e,t,n,s,u,a){
+    e.twq||(s=e.twq=function(){
+        s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
+    },s.version='1.1',s.queue=[],u=t.createElement(n),
+    u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',
+    a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))
+}(window,document,'script');
+
+twq('config','p7w2h'); // 🔴 PUT YOUR PIXEL ID HERE
+twq('track','PageView');
+</script>
+
+</head>
+<body style="background:#0f172a;color:white;font-family:sans-serif;padding:40px">
+
+<h1>Twitter Pixel Live Tracking</h1>
+<p>Open DevTools → Network → filter "uwt" to see requests.</p>
+
+<button onclick="trackAddToCart()">Add To Cart</button>
+<br><br>
+<button onclick="trackPurchase()">Purchase</button>
+<br><br>
+<button onclick="trackSignup()">Signup</button>
+
+<script>
+function trackAddToCart(){
+    twq('track','AddToCart');
+    console.log("AddToCart sent");
+}
+
+function trackPurchase(){
+    twq('track','Purchase',{
+        value: 49.99,
+        currency: 'USD'
+    });
+    console.log("Purchase sent");
+}
+
+function trackSignup(){
+    twq('track','SignUp');
+    console.log("Signup sent");
+}
+</script>
+
+</body>
+</html>
