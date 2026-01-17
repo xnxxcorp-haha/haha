@@ -2,7 +2,233 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Twitter Pixel Live Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twitter Pixel Auto Sender</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+        padding: 20px;
+        min-height: 100vh;
+    }
+    
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+    }
+    
+    h1 {
+        color: #1da1f2;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .config-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-left: 4px solid #1da1f2;
+    }
+    
+    .config-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 15px;
+        align-items: center;
+    }
+    
+    label {
+        font-weight: 600;
+        min-width: 180px;
+    }
+    
+    input, select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        flex: 1;
+        max-width: 300px;
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: #1da1f2;
+        box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+    }
+    
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+        flex-wrap: wrap;
+    }
+    
+    button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+    
+    .start-btn {
+        background: #1da1f2;
+        color: white;
+        flex: 1;
+    }
+    
+    .start-btn:hover {
+        background: #0d8bd9;
+        transform: translateY(-2px);
+    }
+    
+    .stop-btn {
+        background: #ff4d4d;
+        color: white;
+        flex: 1;
+    }
+    
+    .stop-btn:hover {
+        background: #e60000;
+        transform: translateY(-2px);
+    }
+    
+    .test-btn {
+        background: #28a745;
+        color: white;
+    }
+    
+    .test-btn:hover {
+        background: #218838;
+        transform: translateY(-2px);
+    }
+    
+    .clear-btn {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .clear-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    .log-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .log-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .log-entry {
+        padding: 8px 10px;
+        margin-bottom: 5px;
+        background: white;
+        border-radius: 4px;
+        border-left: 3px solid #1da1f2;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+    }
+    
+    .log-entry.success {
+        border-left-color: #28a745;
+    }
+    
+    .log-entry.error {
+        border-left-color: #dc3545;
+    }
+    
+    .stats {
+        display: flex;
+        justify-content: space-between;
+        background: #e9ecef;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1da1f2;
+    }
+    
+    .stat-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    
+    .status-active {
+        background: #28a745;
+        box-shadow: 0 0 8px #28a745;
+    }
+    
+    .status-inactive {
+        background: #dc3545;
+    }
+    
+    .status-paused {
+        background: #ffc107;
+    }
+    
+    @media (max-width: 768px) {
+        .config-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        input, select {
+            max-width: 100%;
+            width: 100%;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        button {
+            width: 100%;
+        }
+    }
+</style>
 
 <!-- ✅ Twitter (X) Pixel Base Code -->
 <script>
@@ -14,36 +240,319 @@
     a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))
 }(window,document,'script');
 
-twq('config','p7w2h'); /* 👈 REPLACE THIS */
+// Configure with your Pixel ID
+twq('config','p7w2h'); // Replace with your actual Pixel ID
 twq('track','PageView');
 </script>
-
 </head>
-<body style="font-family:sans-serif; background:#fff; padding:30px; color:#000;">
-
-<h1>Twitter Pixel Test Page</h1>
-<p>Open DevTools → Network → filter <code>ads-twitter.com</code> to see pixel calls.</p>
-
-<button onclick="trackAddToCart()">Add To Cart</button><br><br>
-<button onclick="trackPurchase()">Purchase</button><br><br>
-<button onclick="trackSignup()">Signup</button>
+<body>
+<div class="container">
+    <h1>Twitter Pixel Auto Sender</h1>
+    <p class="subtitle">Automatically send pixel requests with custom frequency and volume</p>
+    
+    <div class="config-section">
+        <h3>Configuration Settings</h3>
+        
+        <div class="config-row">
+            <label for="totalRequests">Total Requests:</label>
+            <input type="number" id="totalRequests" min="1" max="10000" value="10">
+            <span style="color: #666; font-size: 14px;">Number of pixel events to send</span>
+        </div>
+        
+        <div class="config-row">
+            <label for="delayMs">Delay Between Requests (ms):</label>
+            <input type="number" id="delayMs" min="0" max="10000" value="500">
+            <span style="color: #666; font-size: 14px;">Milliseconds between each request</span>
+        </div>
+        
+        <div class="config-row">
+            <label for="eventType">Event Type:</label>
+            <select id="eventType">
+                <option value="PageView">PageView</option>
+                <option value="AddToCart">AddToCart</option>
+                <option value="Purchase">Purchase</option>
+                <option value="SignUp">SignUp</option>
+                <option value="ViewContent">ViewContent</option>
+                <option value="InitiateCheckout">InitiateCheckout</option>
+                <option value="CompleteRegistration">CompleteRegistration</option>
+                <option value="Search">Search</option>
+            </select>
+            <span style="color: #666; font-size: 14px;">Type of event to send</span>
+        </div>
+        
+        <div class="config-row">
+            <label for="pixelId">Twitter Pixel ID:</label>
+            <input type="text" id="pixelId" value="o6vib">
+            <span style="color: #666; font-size: 14px;">Your Twitter Pixel ID</span>
+        </div>
+        
+        <div class="button-group">
+            <button id="startBtn" class="start-btn">Start Auto Sending</button>
+            <button id="stopBtn" class="stop-btn">Stop Sending</button>
+            <button id="testBtn" class="test-btn">Send Test Request</button>
+            <button id="clearLogBtn" class="clear-btn">Clear Log</button>
+        </div>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-value" id="sentCount">0</div>
+            <div class="stat-label">Sent</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="failedCount">0</div>
+            <div class="stat-label">Failed</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="remainingCount">0</div>
+            <div class="stat-label">Remaining</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statusIndicator">
+                <span class="status-indicator status-inactive"></span> Inactive
+            </div>
+            <div class="stat-label">Status</div>
+        </div>
+    </div>
+    
+    <div class="log-section">
+        <div class="log-title">Activity Log</div>
+        <div id="logContainer"></div>
+    </div>
+</div>
 
 <script>
-function trackAddToCart(){
-    twq('track','AddToCart');
-    alert("AddToCart event sent");
+// Global variables
+let isSending = false;
+let sendInterval = null;
+let sentCount = 0;
+let failedCount = 0;
+let totalRequests = 0;
+let remainingRequests = 0;
+
+// DOM elements
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const testBtn = document.getElementById('testBtn');
+const clearLogBtn = document.getElementById('clearLogBtn');
+const logContainer = document.getElementById('logContainer');
+const sentCountEl = document.getElementById('sentCount');
+const failedCountEl = document.getElementById('failedCount');
+const remainingCountEl = document.getElementById('remainingCount');
+const statusIndicator = document.getElementById('statusIndicator');
+
+// Event listeners
+startBtn.addEventListener('click', startAutoSending);
+stopBtn.addEventListener('click', stopAutoSending);
+testBtn.addEventListener('click', sendTestRequest);
+clearLogBtn.addEventListener('click', clearLog);
+
+// Initialize
+updateStats();
+
+// Function to log messages
+function logMessage(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = document.createElement('div');
+    logEntry.className = `log-entry ${type}`;
+    logEntry.textContent = `[${timestamp}] ${message}`;
+    logContainer.prepend(logEntry);
 }
 
-function trackPurchase(){
-    twq('track','Purchase',{ value: 30.00, currency:'USD' });
-    alert("Purchase event sent");
+// Function to update statistics
+function updateStats() {
+    sentCountEl.textContent = sentCount;
+    failedCountEl.textContent = failedCount;
+    remainingCountEl.textContent = remainingRequests;
+    
+    // Update status indicator
+    const statusEl = statusIndicator.querySelector('.status-indicator');
+    statusEl.className = 'status-indicator';
+    
+    if (isSending) {
+        statusEl.classList.add('status-active');
+        statusIndicator.innerHTML = '<span class="status-indicator status-active"></span> Active';
+    } else {
+        statusEl.classList.add('status-inactive');
+        statusIndicator.innerHTML = '<span class="status-indicator status-inactive"></span> Inactive';
+    }
 }
 
-function trackSignup(){
-    twq('track','SignUp');
-    alert("SignUp event sent");
+// Function to send a pixel event
+function sendPixelEvent(eventType, customData = null) {
+    return new Promise((resolve) => {
+        try {
+            // Get pixel ID from input
+            const pixelId = document.getElementById('pixelId').value.trim();
+            
+            // Update pixel ID if changed
+            twq('config', pixelId);
+            
+            // Send the event
+            if (customData) {
+                twq('track', eventType, customData);
+            } else {
+                twq('track', eventType);
+            }
+            
+            // Simulate network request for tracking purposes
+            logMessage(`Sent ${eventType} event to Pixel ID: ${pixelId}`, 'success');
+            resolve(true);
+        } catch (error) {
+            logMessage(`Error sending ${eventType}: ${error.message}`, 'error');
+            resolve(false);
+        }
+    });
 }
+
+// Function to send a test request
+function sendTestRequest() {
+    const eventType = document.getElementById('eventType').value;
+    
+    // For purchase events, add some sample data
+    let customData = null;
+    if (eventType === 'Purchase') {
+        customData = { 
+            value: (Math.random() * 100 + 10).toFixed(2), 
+            currency: 'USD',
+            transaction_id: 'TEST_' + Date.now()
+        };
+    } else if (eventType === 'AddToCart') {
+        customData = {
+            value: (Math.random() * 50 + 5).toFixed(2),
+            currency: 'USD',
+            content_ids: ['TEST_PRODUCT_123'],
+            content_type: 'product'
+        };
+    }
+    
+    sendPixelEvent(eventType, customData);
+}
+
+// Function to start auto sending
+function startAutoSending() {
+    if (isSending) {
+        logMessage('Already sending requests. Stop first.', 'error');
+        return;
+    }
+    
+    // Get configuration values
+    totalRequests = parseInt(document.getElementById('totalRequests').value);
+    const delayMs = parseInt(document.getElementById('delayMs').value);
+    const eventType = document.getElementById('eventType').value;
+    
+    // Validate inputs
+    if (totalRequests < 1 || totalRequests > 10000) {
+        logMessage('Please enter a valid number of requests (1-10000)', 'error');
+        return;
+    }
+    
+    if (delayMs < 0 || delayMs > 10000) {
+        logMessage('Please enter a valid delay (0-10000 ms)', 'error');
+        return;
+    }
+    
+    // Reset counters
+    sentCount = 0;
+    failedCount = 0;
+    remainingRequests = totalRequests;
+    isSending = true;
+    
+    logMessage(`Starting auto send: ${totalRequests} ${eventType} events with ${delayMs}ms delay`, 'info');
+    updateStats();
+    
+    // Create sample data for purchase events
+    let sampleData = null;
+    if (eventType === 'Purchase') {
+        sampleData = {
+            currency: 'USD',
+            content_type: 'product'
+        };
+    }
+    
+    // Start sending events
+    let requestNumber = 0;
+    
+    sendInterval = setInterval(() => {
+        if (requestNumber >= totalRequests) {
+            stopAutoSending();
+            logMessage('Completed all requests!', 'success');
+            return;
+        }
+        
+        requestNumber++;
+        remainingRequests = totalRequests - requestNumber;
+        
+        // For purchase events, add dynamic values
+        let customData = null;
+        if (eventType === 'Purchase' && sampleData) {
+            customData = {
+                ...sampleData,
+                value: (Math.random() * 100 + 10).toFixed(2),
+                transaction_id: 'AUTO_' + Date.now() + '_' + requestNumber
+            };
+        } else if (eventType === 'AddToCart') {
+            customData = {
+                value: (Math.random() * 50 + 5).toFixed(2),
+                currency: 'USD',
+                content_ids: ['PROD_' + (1000 + requestNumber)],
+                content_type: 'product'
+            };
+        }
+        
+        // Send the event
+        sendPixelEvent(eventType, customData).then(success => {
+            if (success) {
+                sentCount++;
+            } else {
+                failedCount++;
+            }
+            updateStats();
+        });
+        
+    }, delayMs);
+}
+
+// Function to stop auto sending
+function stopAutoSending() {
+    if (sendInterval) {
+        clearInterval(sendInterval);
+        sendInterval = null;
+    }
+    
+    if (isSending) {
+        logMessage('Auto sending stopped', 'info');
+        isSending = false;
+        updateStats();
+    }
+}
+
+// Function to clear the log
+function clearLog() {
+    logContainer.innerHTML = '';
+    logMessage('Log cleared', 'info');
+}
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    // Ctrl+Enter to start
+    if (e.ctrlKey && e.key === 'Enter') {
+        startAutoSending();
+    }
+    
+    // Escape to stop
+    if (e.key === 'Escape') {
+        stopAutoSending();
+    }
+    
+    // Ctrl+L to clear log
+    if (e.ctrlKey && e.key === 'l') {
+        clearLog();
+    }
+});
+
+// Initial log message
+logMessage('Twitter Pixel Auto Sender initialized. Configure settings and click "Start Auto Sending".', 'info');
 </script>
-
 </body>
-</html>
+    </html>
